@@ -7,7 +7,7 @@ class Core
         $currentController = "homeController";
         $currentAction = "index";
         $params = array();
-        //$url = 'nada';
+        $url = '';
         if (isset($_SERVER['REDIRECT_URL'])) 
         {
             $url = $_SERVER['REDIRECT_URL'];
@@ -25,7 +25,7 @@ class Core
                 $params = $url;
             }
         }
-        $c = new $currentController();
+        $c = new $currentController();      
         call_user_func_array(array($c, $currentAction), $params);
     }
 }

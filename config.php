@@ -1,11 +1,11 @@
 <?php
 
 require 'environment.php';
-define("BASE_URL", "lojavirtual:81");
+define("BASE_URL", "http://lojavirtual:81/");
 global $config;
 $config = array();
 
-if('ENVIRONMENT' == 'development')
+if(ENVIRONMENT == 'development')
 {
     $config['dbname'] = 'lojavirtual';
     $config['host']   = '127.0.0.1';
@@ -19,4 +19,3 @@ else
     $config['dbuser'] = 'u125275386_root';
     $config['dbpass'] = '123456';
 }
-
