@@ -12,7 +12,9 @@
       <title>Loja Virtual</title>  
     </head>
     <body>
-        <div class="topo"></div>
+        <div class="topo">
+            <img src="/assets/images/banner.png" border="0" width="100%" height="100" />
+        </div>
         <div class="menu">
             <div class="menuint">
                 <ul>

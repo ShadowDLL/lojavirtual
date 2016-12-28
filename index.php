@@ -12,7 +12,7 @@ spl_autoload_register(function($class){
     {
         require_once "models/".$class.".php";
     }
-    else
+    else if(file_exists("core/".$class.".php"))
     {
         require "core/".$class.".php";
     }

@@ -6,7 +6,6 @@ body{
 }
 .topo{
     height: 100px;
-    background-color: #EEE;
 }
 .menu{
     height: 50px;
@@ -89,6 +88,12 @@ body{
     height: 50px;
     text-align: right; 
     float: right; 
+}
+.erro{
+    padding: 15px;
+    border: 1px solid #000;
+    background-color: #EEE;  
+    margin-bottom: 10px;
 }
 
 

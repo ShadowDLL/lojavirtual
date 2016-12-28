@@ -1,4 +1,10 @@
 <form method="POST">
+    <h1>Finalizar Compra</h1>
+    
+    <?php if (!empty($aviso)): ?>
+        <div class="erro"><?php echo $aviso; ?></div>
+    <?php endif; ?> 
+    
     <fieldset>
         <legend>Informações do Usuário:</legend>
         Nome:<br/>
@@ -12,7 +18,7 @@
     <br/>
     <fieldset>
         <legend>Informações do Endereço:</legend>
-        <textarea name="textarea"></textarea>
+        <textarea name="endereco"></textarea>
     </fieldset>
     <br/>
     <fieldset>

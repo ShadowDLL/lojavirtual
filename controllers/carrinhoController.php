@@ -41,11 +41,11 @@ class carrinhoController extends controller{
     public function finalizar(){
         $dados = array(
             'pagamentos' => array(),
-            'total' => '0'
+            'total' => '0',
+            'aviso' => ''
         );  
         $p = new pagamentos();
-        $dados['pagamentos'] = $p->getPagamentos();
-        
+        $dados['pagamentos'] = $p->getPagamentos();      
         $produtos = array();
         if (isset($_SESSION['carrinho'])) {
             $produtos = $_SESSION['carrinho'];
@@ -57,9 +57,57 @@ class carrinhoController extends controller{
                 $dados['total'] += $prod['preco'];
             }
         }
-        
-        
+        if (isset($_POST['nome']) && !empty($_POST['nome'])) {
+            $nome = addslashes($_POST['nome']);
+            $email = (isset($_POST['email']))?addslashes($_POST['email']):'';
+            $senha = (isset($_POST['senha']))?md5($_POST['senha']):'';
+            $endereco = (isset($_POST['endereco']))?addslashes($_POST['endereco']):'';
+            $pg = (isset($_POST['pg']))?addslashes($_POST['pg']):'';  
+            if (!empty($email) && !empty($senha) && !empty($endereco) && !empty($pg)) {
+                $uid = 0;
+                $u = new usuarios();
+                if ($u->isExists($email)) {
+                    if ($u->isExists($email, $senha)) {
+                        $uid = $u->getId($email);
+                    }
+                    else{
+                        $dados['aviso'] = "Usuário e/ou senha inválidos!";
+                    }
+                }
+                else{
+                    $uid = $u->addUser($nome, $email, $senha);
+                }      
+                if ($uid > 0) {      
+                    $subtotal = 0;
+                    $prods = array();
+                    if (isset($_SESSION['carrinho'])) {
+                    $prods = $_SESSION['carrinho'];
+                    }
+                    if (count($prods) > 0 ) {
+                       $produtos = new produtos();
+                        $prods = $produtos->getProdutos($prods);
+                        foreach($prods as $prod){
+                            $subtotal += $prod['preco'];
+                        }
+                    }
+                    
+                    $v = new vendas();
+                    $link = $v->setVenda($uid, $endereco, $subtotal, $pg, $prods);
+                    header("Location: ".$link);                
+                }         
+            }
+            else{
+                $dados['aviso'] = "Preencha todos os campos!";
+            }       
+        }    
         $this->loadTemplate('finalizar_compra', $dados);
     }
+    public function notificacao(){
+        //Pagseguro vai enviar o tipo da notificação e o código da notificação via POST
+    }
+    public function obrigado(){
+        $this->loadTemplate('obrigado');
+    }
+    
 }
 
