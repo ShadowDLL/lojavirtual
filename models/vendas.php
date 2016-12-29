@@ -3,6 +3,17 @@ class vendas extends model{
     public function __construct(){
         parent::__construct();
     }
+    public function getPedidosDoUsuario($id_usuario){
+        $array = array();
+        if (!empty($id_usuario)) {
+            $sql = "SELECT * FROM vendas WHERE id_usuario = '$id_usuario'";
+            $sql = $this->db->query($sql);
+            if ($sql->rowCount() > 0) {
+                $array = $sql->fetchAll();
+            }
+        }
+        return $array;
+    }
     public function setVenda($uid, $endereco, $subtotal, $pg, $prods){
         /*
         1 => Aguardando aprovação

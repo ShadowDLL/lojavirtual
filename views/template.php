@@ -24,6 +24,7 @@
                     <a href="/categoria/ver/<?php echo($menuitem['id']); ?>"><li><?php echo utf8_encode($menuitem['titulo']); ?></li></a>
                     <?php endforeach; ?>
                     <a href="/contato"><li>Contato</li></a>
+                    <a href="/pedidos"><li>Pedidos</li></a>
                 </ul>
                 <a href="/carrinho">
                 <div class="carrinho">

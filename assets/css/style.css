@@ -95,5 +95,10 @@ body{
     background-color: #EEE;  
     margin-bottom: 10px;
 }
+.logout{
+    position: absolute;
+    top:180px;
+    left: 760px;
+}
 
 
