@@ -3,10 +3,35 @@ class vendas extends model{
     public function __construct(){
         parent::__construct();
     }
+    
+    public function getPedido($id, $id_usuario){
+        $array = array();
+        if (!empty($id)) {
+            $sql = "SELECT *, (SELECT pagamentos.nome FROM pagamentos WHERE pagamentos.id = vendas.forma_pg) AS forma_pg FROM vendas WHERE id = '$id' AND id_usuario = '$id_usuario'";
+            $sql = $this->db->query($sql);
+            if ($sql->rowCount() > 0) {
+                $array = $sql->fetch();
+                $array['produtos'] = $this->getProdutosDoPedido($id);
+            }
+        }
+        return $array;
+    }
+    
+    public function getProdutosDoPedido($id){
+        $array = array();
+        if (!empty($id)) {
+           $sql = "SELECT v.quantidade, v.id_produto,p.nome,p.imagem,p.preco FROM vendas_produto AS v LEFT JOIN produtos AS p ON v.id_produto = p.id WHERE v.id_venda = '$id'"; 
+           $sql = $this->db->query($sql);
+           if ($sql->rowCount() > 0) {
+               $array = $sql->fetchAll();
+           }
+        }
+        return $array;
+    }
     public function getPedidosDoUsuario($id_usuario){
         $array = array();
         if (!empty($id_usuario)) {
-            $sql = "SELECT * FROM vendas WHERE id_usuario = '$id_usuario'";
+            $sql = "SELECT *, (SELECT pagamentos.nome FROM pagamentos WHERE pagamentos.id = vendas.forma_pg) AS forma_pg FROM vendas WHERE id_usuario = '$id_usuario'";
             $sql = $this->db->query($sql);
             if ($sql->rowCount() > 0) {
                 $array = $sql->fetchAll();

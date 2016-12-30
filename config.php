@@ -19,3 +19,13 @@ else
     $config['dbuser'] = 'u125275386_root';
     $config['dbpass'] = '123456';
 }
+/*Formas de Pagamento
+ * 
+ * 1 => Aguardando Aprovação
+ * 2 => Aprovado
+ * 3=> Cancelado
+*/
+
+$config['status_pg'][1] = "Aguardando Aprovação";
+$config['status_pg'][2] = "Aprovado";
+$config['status_pg'][3] = "Cancelado";

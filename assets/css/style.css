@@ -100,5 +100,13 @@ body{
     top:180px;
     left: 760px;
 }
+.pedido_produto{
+    width: 100px;
+    margin-top: 10px;
+    float: left;
+    border: 1px solid #000;
+    margin-right: 20px;
+    padding: 5px;
+}
 
 

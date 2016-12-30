@@ -45,7 +45,8 @@ class carrinhoController extends controller{
             'aviso' => ''
         );  
         $p = new pagamentos();
-        $dados['pagamentos'] = $p->getPagamentos();      
+        $dados['pagamentos'] = $p->getPagamentos();
+        unset($p);    
         $produtos = array();
         if (isset($_SESSION['carrinho'])) {
             $produtos = $_SESSION['carrinho'];
@@ -53,6 +54,7 @@ class carrinhoController extends controller{
         if (count($produtos) > 0 ) {
             $p = new produtos();
             $dados['produtos'] = $p->getProdutos($produtos);
+            unset($p);
             foreach($dados['produtos'] as $prod){
                 $dados['total'] += $prod['preco'];
             }
@@ -76,23 +78,12 @@ class carrinhoController extends controller{
                 }
                 else{
                     $uid = $u->addUser($nome, $email, $senha);
-                }      
-                if ($uid > 0) {      
-                    $subtotal = 0;
-                    $prods = array();
-                    if (isset($_SESSION['carrinho'])) {
-                    $prods = $_SESSION['carrinho'];
-                    }
-                    if (count($prods) > 0 ) {
-                       $produtos = new produtos();
-                        $prods = $produtos->getProdutos($prods);
-                        foreach($prods as $prod){
-                            $subtotal += $prod['preco'];
-                        }
-                    }
-                    
+                }
+                unset($u);      
+                if ($uid > 0) {                       
                     $v = new vendas();
-                    $link = $v->setVenda($uid, $endereco, $subtotal, $pg, $prods);
+                    $link = $v->setVenda($uid, $endereco, $dados['total'], $pg, $dados['produtos']);
+                    unset($v);
                     header("Location: ".$link);                
                 }         
             }
@@ -102,8 +93,12 @@ class carrinhoController extends controller{
         }    
         $this->loadTemplate('finalizar_compra', $dados);
     }
+    
+    
     public function notificacao(){
         //Pagseguro vai enviar o tipo da notificação e o código da notificação via POST
+        $vendas = new vendas();
+        $vendas->verificarVendas();         
     }
     public function obrigado(){
         $this->loadTemplate('obrigado');

@@ -12,8 +12,21 @@ class pedidosController extends controller{
         }
         else{
             header("Location: /login");
+        }        
+    }
+    public function ver($id){
+        $dados = array();
+        if (!empty($id)) {
+            $id = addslashes($id);
+            $vendas = new vendas();
+            $dados['pedido'] = $vendas->getPedido($id, $_SESSION['cliente']);
+            if (count($dados['pedido']) == 0) {
+                header("Location: /pedidos");
+            }
+            $this->loadTemplate('pedidos_ver', $dados);
+        }else{
+            header("Location: /pedidos");
         }
-           
     }
 }
 
