@@ -40,6 +40,54 @@ class carrinhoController extends controller{
     }
     public function finalizar(){
         $dados = array(
+            'total' => 0,
+            'sessionId' => '',
+            'erro' => '',
+            'produtos' => array()
+        );
+        require 'libraries/PagSeguroLibrary/PagSeguroLibrary.php';
+        
+        $produtos = array();
+        if (isset($_SESSION['carrinho'])) {
+            $prods= $_SESSION['carrinho'];
+        }
+        
+        if (count($prods) > 0) {
+            $produtos = new produtos();
+            $dados['produtos'] = $produtos->getProdutos($prods);
+            foreach($dados['produtos'] as $prod){
+                $dados['total'] += $prod['preco'];
+            }
+        }
+        
+        if (isset($_POST['pg_form']) && !empty($_POST['pg_form'])) {
+            
+        }
+        else{
+            try{
+                $credentials = PagSeguroConfig::getAccountCredentials();
+                $dados['sessionId'] = PagSeguroSessionService::getSession($credentials);
+            } catch (PagSeguroServiceException $e) {
+                die($e->getMessage());
+            }
+        }
+        
+        
+        
+        $this->loadTemplate("finalizar_compra", $dados);     
+    }
+       
+    public function notificacao(){
+        //Pagseguro vai enviar o tipo da notificação e o código da notificação via POST
+        $vendas = new vendas();
+        $vendas->verificarVendas();         
+    }
+    public function obrigado(){
+        $this->loadTemplate('obrigado');
+    }
+    
+        /*public function finalizar(){
+        $dados = array(
             'pagamentos' => array(),
             'total' => '0',
             'aviso' => ''
@@ -92,17 +140,7 @@ class carrinhoController extends controller{
             }       
         }    
         $this->loadTemplate('finalizar_compra', $dados);
-    }
-    
-    
-    public function notificacao(){
-        //Pagseguro vai enviar o tipo da notificação e o código da notificação via POST
-        $vendas = new vendas();
-        $vendas->verificarVendas();         
-    }
-    public function obrigado(){
-        $this->loadTemplate('obrigado');
-    }
+    }*/
     
 }
 
