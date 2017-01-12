@@ -61,7 +61,34 @@ class carrinhoController extends controller{
         }
         
         if (isset($_POST['pg_form']) && !empty($_POST['pg_form'])) {
+            $nome = addslashes($_POST['nome']);
+            $email = addslahes($_POST['email']);
+            $senha = addslashes($_POST['senha']);
+            $sessionId = addslashes($_POST['sessionId']);
             
+            if (!empty($email) && !empty($senha)) {
+                $uid = 0;
+                $u = new usuarios();
+                if ($u->isExists($email)) {
+                    if ($u->isExists($email, $senha)) {
+                        $uid = $u->getId($email);
+                    }
+                    else{
+                        $dados['erro'] = "Usuário e/ou senha inválidos!";
+                    }
+                }
+                else{
+                    $uid = $u->addUser($nome, $email, $senha);
+                }
+            }
+            else{
+                $dados['erro'] = "Preencha todos os campos";
+            }
+            
+            if ($uid > 0) {
+                $vendas = new vendas();
+                $venda = $vendas->setVendaCkTransparente($_POST, $uid, $sessionId, $dados['produtos'], $dados['total']);
+            }
         }
         else{
             try{

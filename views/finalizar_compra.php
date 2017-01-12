@@ -1,5 +1,5 @@
 <h1>Finalizar Compra</h1>
-<form method="POST" id="form">
+<form method="POST" id="form" onsubmit="return pagar()"><!--Evitar o envio da primeira vez -->
     <fieldset>
         <legend>Informações do Usuário</legend>
         Nome:<br/>

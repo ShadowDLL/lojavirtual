@@ -129,5 +129,74 @@ class vendas extends model{
             }
         }
     }
+    
+    public function setVendaCkTransparente($params, $uid, $sessionId, $produtos, $subtotal){
+        require 'libraries/PagSeguroLibrary/PagSeguroLibrary.php';
+        /*
+        1 => Aguardando aprovação
+        2 => Aprovado
+        3 => Cancelado    
+        */
+        
+        $status = '1';
+        $link = '';
+        $endereco = implode(', ', $params['endereco']);
+        
+        $sql = "INSERT INTO vendas SET id_usuario = '$uid', endereco = '$endereco', valor = '$subtotal', forma_pg = '6', status_pg = '$status', pg_link = '$sessionId'";
+        $this->db->query($sql);
+        $id_venda = $this->db->lastInsertId();
+        
+        foreach ($produtos as $prod){
+        $sql = "INSERT INTO vendas_produto SET id_venda = '$id_venda', id_produto = '".($prod['id'])."', quantidade = '1'";
+        $this->db->query($sql);
+        }
+        unset($_SESSION['carrinho']);
+        
+        $directPaymentRequest = new PagSeguroDirectPaymentRequest();
+        $directPaymentRequest->setPaymentMode('DEFAULT');
+        $directPaymentRequest->setPaymentMethod($params['pg_form']);
+        $directPaymentRequest->setReference($id_venda);
+        $directPaymentRequest->setCurrency('BRL');
+        $directPaymentRequest->addParameter("notificationURL", "http://lojavirtual.orlnet.xyz/carrinho/notificacao");
+        
+        foreach ($produtos as $prod){
+            $directPaymentRequest->addItem($prod['id'], $prod['nome'], 1, $prod['preco']);
+        }
+        
+        $directPaymentRequest->setSender(
+            $parms['nome'],
+            $parms['email'],
+            $parms['ddd'],
+            $parms['telefone'],
+            'CPF',
+            $parms['c_cpf']
+        );
+        
+        $directPaymentRequest->setSenderHash($params['shash']);
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }
 
