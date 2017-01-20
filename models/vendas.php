@@ -151,44 +151,107 @@ class vendas extends model{
         $this->db->query($sql);
         }
         unset($_SESSION['carrinho']);
-        
+        //Configurações iniciais do pagseguro
         $directPaymentRequest = new PagSeguroDirectPaymentRequest();
+        //Único que existe no momento
         $directPaymentRequest->setPaymentMode('DEFAULT');
+        //Forma de pagamento
         $directPaymentRequest->setPaymentMethod($params['pg_form']);
+        //Referencia da compra
         $directPaymentRequest->setReference($id_venda);
+        //Moeda
         $directPaymentRequest->setCurrency('BRL');
+        //Parametro de notificação para quando atualizar o status no pagseguro
         $directPaymentRequest->addParameter("notificationURL", "http://lojavirtual.orlnet.xyz/carrinho/notificacao");
-        
+        //Preenchendo os produtos
         foreach ($produtos as $prod){
             $directPaymentRequest->addItem($prod['id'], $prod['nome'], 1, $prod['preco']);
         }
-        
+        //Dados do usuário
         $directPaymentRequest->setSender(
-            $parms['nome'],
-            $parms['email'],
-            $parms['ddd'],
-            $parms['telefone'],
+            $params['nome'],
+            $params['email'],
+            $params['ddd'],
+            $params['telefone'],
             'CPF',
-            $parms['c_cpf']
+            $params['c_cpf']
+        );
+        //Setando o hash
+        $directPaymentRequest->setSenderHash($params['shash']);
+        //Forma de envio 1 => SEDEX, 2 => PAC, 3 => Não informado a combinar
+        $directPaymentRequest->setShippingAddress(3);
+        $directPaymentRequest->setShippingCost(0);
+        //Dados de Frete requerido pelo pagseguro
+        $directPaymentRequest->setShippingAddress(
+                $params['endereco']['cep'],
+                $params['endereco']['logradouro'],
+                $params['endereco']['numero'],
+                $params['endereco']['complemento'],
+                $params['endereco']['bairro'],
+                $params['endereco']['cidade'],
+                $params['endereco']['estado'],
+                'BRA'
+        );
+        //Dados de Endereço de pagamento
+        $billingAddress = new PagSeguroBilling(
+                array(
+                    'postalCode' => $params['endereco']['cep'],
+                    'street' => $params['endereco']['logradouro'],
+                    'number' => $params['endereco']['numero'],
+                    'complement' => $params['endereco']['complemento'],
+                    'district' => $params['endereco']['bairro'],
+                    'city' => $params['endereco']['cidade'],
+                    'state' => strtoupper($params['endereco']['estado']),
+                    'country' => 'BRA' 
+                )
         );
         
-        $directPaymentRequest->setSenderHash($params['shash']);
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+        if ($params['pg_form'] == 'CREDIT_CARD') {
+            $parc = explode(';', $params['parc']);
+            //Classe de parcelamento do pagseguro
+            $installments = new PagSeguroInstallment(
+                    '',//Solicita a bandeira do carão mas não é necessário enviar
+                    $parc[0],//Numero de parcelas
+                    $parc[1],//Valor da parcela
+                    '',//Interestfree que não é necessário
+                    ''//Dígito cvv que tambem não é necessário ma tem que preencher
+            );
+            //Classe para gerar as informações do cartão
+            $creditCardData = new PagSeguroCreditCardCheckout(
+                    array(
+                        'token' => $params['ctoken'], //Token gerado pelo pagseguro
+                        'installment' => $installments, //Informações de parcelamento do cartão
+                        'billing' => $billingAddress,  //Endereço de Pagamento
+                        'holder' => new PagSeguroCreditCardHolder(
+                                    array(
+                                        'name' => $params['c_titular'], //Nome do titular
+                                        'birthDate' => date('01/10/1979'), //Não é necessário pode inserir qualquer data
+                                        'areaCode' => $params['ddd'],  //DDD do telefone
+                                        'number' => $params['telefone'], //Número de telefone
+                                        'documents' => array(
+                                            'type' => 'CPF',
+                                            'value' => $params['c_cpf']
+                                        )
+                                    )
+                                )//Dados do titular
+                    )
+            );
+            //Registro do pagamento
+            $directPaymentRequest->setCreditCard($creditCardData);
+        }
+        //Registrar o pagamento requerido try catch pelo pagseguro
+        try {
+            $credentials = PagSeguroConfig::getAccountCredentials();
+            $resposta = $directPaymentRequest->register($credentials);
+            return $resposta;
+        } catch (PagSeguroServiceException $e) {
+            die($e->getMessage());
+        }      
     }
     
-    
+    public function setLinkBySession($link, $sessionId){
+        $this->db->query("UPDATE venda SET pg_link = '$link' WHERE pg_link = '$sessionId'");
+    }
     
     
     

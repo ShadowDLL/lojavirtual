@@ -1,7 +1,7 @@
 window.onload = function(){
    //Ao carregar a página vai iniciar a sessão para envio
    PagSeguroDirectPayment.setSessionId(sessionId);
-}
+};
 function selectPg(){
     var pgCode = document.getElementById('pg_form').value;
     if (pgCode === "CREDIT_CARD") {

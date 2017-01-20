@@ -1,42 +1,41 @@
+<script type="text/javascript">
+    preencheUF();
+</script>
 <h1>Finalizar Compra</h1>
+<?php if (!empty($erro)): ?>
+    <h3><?php echo $erro; ?></h3>
+<?php endif; ?>
 <form method="POST" id="form" onsubmit="return pagar()"><!--Evitar o envio da primeira vez -->
     <fieldset>
         <legend>Informações do Usuário</legend>
-        Nome:<br/>
-        <input type="text" name="nome" autofocus ><br/><br/>
         
-        E-mail:<br/>
-        <input type="email" name="email" ><br/><br/>
+        <input type="text" name="nome" placeholder="Nome" size="50"  autofocus ><br/><br/>
         
-        Senha:<br/>
-        <input type="password" name="senha" ><br/><br/>
+        <input type="email" name="email" placeholder="E-mail" size="50" ><br/><br/>
         
-        Telefone:<br/>
-        <input type="text" name="ddd" maxlength="2" size="1"><input type="text" name="telefone" ><br/><br/>
+        <input type="password" name="senha" placeholder="Senha" ><br/><br/>
+     
+        <input type="text" name="ddd" placeholder="DDD" maxlength="2" size="1">&nbsp;<input type="text" name="telefone" placeholder="Telefone" id="telefone" maxlength="9" size="7"><br/><br/>
     </fieldset><br/>
     
     <fieldset>
         <legend>Informações de Endereço</legend>
-        CEP:<br/>
-        <input type="text" name="endereco[cep]" /><br/><br/>
+        <input type="text" name="endereco[cep]" id="cep" placeholder="CEP" onkeyup="getCep()" maxlength="8" size="6" /><br/><br/>
+
+        <input type="text" name="endereco[logradouro]" id="logradouro" placeholder="Logradouro" size="50"/>
+ 
+        <input type="text" name="endereco[numero]" id="numero" placeholder="Número" size="6" /><br/><br/>
+ 
+        <input type="text" name="endereco[complemento]" placeholder="Complemento" size="50" /><br/><br/>
+    
+        <input type="text" name="endereco[bairro]" id="bairro" placeholder="Bairro" size="50" /><br/><br/>
         
-        Logradouro:<br/>
-        <input type="text" name="endereco[logradouro]" /><br/><br/>
+        <input type="text" name="endereco[cidade]" id="localidade" placeholder="Cidade" size="50" />
         
-        Número:<br/>
-        <input type="text" name="endereco[numero]" /><br/><br/>
+        <select name="endereco[estado]" id="uf" >
+            <option value="SP">SP</option>>
+        </select>
         
-        Complemento:<br/>
-        <input type="text" name="endereco[complemento]" /><br/><br/>
-        
-        Bairro:<br/>
-        <input type="text" name="endereco[bairro]" /><br/><br/>
-        
-        Cidade:<br/>
-        <input type="text" name="endereco[cidade]" /><br/><br/>
-        
-        Estado:<br/>
-        <input type="text" name="endereco[estado]" /><br/><br/>
     </fieldset><br/>
     
     <fieldset>
@@ -60,20 +59,15 @@
                 Parcelamento:<br/>
                 <select name="parc" id="parc"></select><br/><br/>
                 
-                Titular do Cartão:<br/>
-                <input type="text" name="c_titular" /><br/><br/>
+                <input type="text" name="c_titular" placeholder="Titular do Cartão" /><br/><br/>
                 
-                CPF do Titular:<br/>
-                <input type="text" name="c_cpf" /><br/><br/>
+                <input type="text" name="c_cpf" placeholder="CPF do Titular" /><br/><br/>
                 
-                Número do Cartão:<br/>
-                <input type="text" name="cartao" id="cartao" /><br/><br/>
+                <input type="text" name="cartao" placeholder="Número do Cartão" id="cartao" /><br/><br/>
                 
-                Dígito:<br/>
-                <input type="text" name="cvv" id="cvv" maxlength="4" /><br/><br/>
+                <input type="text" name="cvv" placeholder="cvv" id="cvv" maxlength="4" /><br/><br/>
                 
-                Validade:<br/>
-                <input type="text" name="validade" id="validade" />
+                <input type="text" name="validade" placeholder="Validade" id="validade" />
             </div>
         </div>
     </fieldset><br/>

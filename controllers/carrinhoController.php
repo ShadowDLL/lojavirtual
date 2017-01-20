@@ -62,8 +62,8 @@ class carrinhoController extends controller{
         
         if (isset($_POST['pg_form']) && !empty($_POST['pg_form'])) {
             $nome = addslashes($_POST['nome']);
-            $email = addslahes($_POST['email']);
-            $senha = addslashes($_POST['senha']);
+            $email = addslashes($_POST['email']);
+            $senha = md5($_POST['senha']);
             $sessionId = addslashes($_POST['sessionId']);
             
             if (!empty($email) && !empty($senha)) {
@@ -88,6 +88,17 @@ class carrinhoController extends controller{
             if ($uid > 0) {
                 $vendas = new vendas();
                 $venda = $vendas->setVendaCkTransparente($_POST, $uid, $sessionId, $dados['produtos'], $dados['total']);
+                //Pegar o tipo de pagamento retornado que será em forma de númeoro   
+                $tipo = $venda->getPaymentMethod()->getType()->getValue();
+                if ($tipo == 4) {//Boleto = 4
+                   $link = $venda->getPaymentLink();
+                   $vendas->setLinkBySession($link, $sessionId);
+                   header("Location: ".$link);
+                }
+                else{
+                    header("Location: /carrinho/obrigado");
+                }
+                
             }
         }
         else{
